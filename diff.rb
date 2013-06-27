@@ -6,9 +6,6 @@ require 'json'
 f1 = JSON.parse( IO.read(ARGV[0]))
 f2 = JSON.parse( IO.read(ARGV[1]))
 
-puts f1.count
-puts f2.count
-
 h1 = {}
 f1.each {|k| h1[k["name"]] = k}
 
@@ -25,4 +22,4 @@ res = h2.collect do |k,v|
   end
 end
 
-res.sort_by {|k| k[0] }.each {|k| puts k[1] }
+res.sort_by {|k| k[0] }.select {|k| k[0] != 0 }.each {|k| puts k[1] }

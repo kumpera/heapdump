@@ -13,7 +13,7 @@ typedef struct {
 
 static GHashTable *counts;
 static FILE *dump_file;
-
+static int obj_count, obj_size;
 static int
 gc_reference (MonoObject *obj, MonoClass *klass, uintptr_t size, uintptr_t num, MonoObject **refs, uintptr_t *offsets, void *data)
 {
@@ -26,6 +26,8 @@ gc_reference (MonoObject *obj, MonoClass *klass, uintptr_t size, uintptr_t num, 
 
 	entry->instance_count++;
 	entry->instance_size += mono_object_get_size (obj);
+	obj_count++;
+	obj_size += entry->instance_size;
 }
 
 
@@ -46,6 +48,7 @@ int dump_mono_heap (const char *output_file)
 {
 	printf ("---dumping the heap!\n");
 	counts = g_hash_table_new (NULL, NULL);
+	obj_count = obj_size = 0;
 
 	mono_gc_collect (1);
 	mono_gc_walk_heap (0, gc_reference, NULL);
@@ -58,7 +61,7 @@ int dump_mono_heap (const char *output_file)
 	fclose (dump_file);
 	counts = NULL;
 	dump_file = NULL;
-	
+	printf ("found %d objc size %d\n", obj_count, obj_size);
 
 	return 0x12345678;
 }

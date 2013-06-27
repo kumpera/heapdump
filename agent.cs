@@ -18,6 +18,7 @@ class Driver {
 	const string AGENT_PREFIX = "__agent_start__";
 
 	static void PerformAgentOp (string[] args) {
+		Console.WriteLine ("---performing dump---");
 		var assembly = typeof (Driver).Assembly.CodeBase;
 		var dir = Path.GetDirectoryName (assembly.Substring (7));
 		var dylib = Path.Combine (dir, "libNativeDump.dylib");
@@ -29,10 +30,11 @@ class Driver {
 
 		var dele = (DumpHeapFunc)Marshal.GetDelegateForFunctionPointer (func, typeof (DumpHeapFunc));		
 		dele (file);
+		Console.WriteLine ("dump done");
 	}
 
 	static void Main (string[] args) {
-		if (args.Length != 1 || args.Length != 2) {
+		if (args.Length != 1 && args.Length != 2) {
 			Console.WriteLine ("usage agent.exe file_name [pid]");
 			return;
 		}
@@ -53,6 +55,7 @@ class Driver {
 		}
 		
 		var dir = Path.Combine (Environment.CurrentDirectory, args [0]);
+		Console.WriteLine ("dumping to {0}", dir);
 		vm.Attach (typeof (Driver).Assembly.CodeBase, AGENT_PREFIX + dir);
 		Console.WriteLine ("attach done");
 	}
